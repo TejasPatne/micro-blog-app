@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
 export const SignUp = () => {
 
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector(state => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -15,7 +19,7 @@ export const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -25,16 +29,14 @@ export const SignUp = () => {
       })
       const data = await response.json();
       if(data.success === false) {
-        setError(true);
+        dispatch(signInFailure(data));
         return;
       }
-      setError(false);
-    } catch (error) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-    
+      dispatch(signInSuccess(data));
+      navigate('/');
+    } catch (err) {
+      dispatch(signInFailure(err));
+    }     
   };
 
   return (
@@ -65,6 +67,7 @@ export const SignUp = () => {
         <button disabled={loading} className="bg-neutral-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
           {loading ? 'Loading...' : 'Sign Up'}
         </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account?</p>
@@ -72,7 +75,7 @@ export const SignUp = () => {
           <span className="text-blue-500">Sign In</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">{error && 'Something went wrong. Please try again.'}</p>
+      <p className="text-red-700 mt-5">{ error && (error.message ?? 'Something went wrong') }{error && 'Something went wrong. Please try again.'}</p>
     </div>
   );
 };
