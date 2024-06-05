@@ -13,7 +13,6 @@ export const SignUp = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
@@ -75,7 +74,7 @@ export const SignUp = () => {
           <span className="text-blue-500">Sign In</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">{ error && (error.message ?? 'Something went wrong') }{error && 'Something went wrong. Please try again.'}</p>
+      <p className="text-red-700 mt-5">{ error && (error.message ?? 'Something went wrong') }</p>
     </div>
   );
 };
