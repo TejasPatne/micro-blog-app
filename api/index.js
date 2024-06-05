@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import { authRoute, userRoute } from './routes/index.js';
 
 dotenv.config(); 
@@ -8,6 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 
 // Connect to MongoDB
