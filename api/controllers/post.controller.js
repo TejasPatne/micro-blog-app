@@ -24,7 +24,6 @@ export const getPosts = async (req, res, next) => {
                                     }
                                 )
                                 .exec();
-        console.log(page, limit)
         res.status(200).json(posts);
     } catch (err) {
         next(err);

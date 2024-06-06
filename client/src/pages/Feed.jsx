@@ -1,13 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { formatDate } from "../utility/format.js";
+import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 export const Feed = () => {
+  const [newPost, setNewPost] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
+
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [limit, setLimit] = useState(10);
+
+  const navigate = useNavigate();
+
+
+  const handleCreatePost = async () => {
+    if(currentUser === null){
+      navigate('/signin');
+      return;
+    }
+    try {
+      const res = await fetch("/api/post/create", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: newPost,
+          user: currentUser._id
+        })
+      });
+      const data = await res.json();
+      console.log(data);
+      setNewPost("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -32,12 +64,33 @@ export const Feed = () => {
   }, []);
 
   return (
-    <section className="w-1/2 mx-auto text-center">
+    <section className="w-1/2 mx-auto text-center my-4">
+
+      {/* create post */}
+      <div>
+        <form className="flex justify-between gap-3 w-full">
+          <input
+            type="text"
+            placeholder="What's on your mind?"
+            className="w-full p-2 rounded-lg shadow outline-none"
+            onChange={(e) => setNewPost(e.target.value)}
+          />
+          <button
+            type="submit"
+            onClick={handleCreatePost}
+            className="bg-yellow-500 text-white p-2 rounded-lg shadow"
+          >
+            Post
+          </button>
+        </form>
+      </div>
+
+      {/* posts listing */}
       <div className="flex flex-col items-center">
         {posts.map((post) => (
           <div
             key={post._id}
-            className="flex flex-col text-left gap-4 w-full shadow-lg p-4 m-4 rounded-lg"
+            className="flex flex-col text-left gap-4 w-full shadow p-4 m-4 rounded-lg"
           >
             {/* user info */}
             <div className="flex items-center gap-2">
