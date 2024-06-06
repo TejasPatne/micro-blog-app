@@ -2,4 +2,6 @@ export * from "./Home";
 export * from "./SignUp";
 export * from "./SignIn";
 export * from "./Profile";
-export * from "./Feed";
+
+// feed
+export * from "./feed/Feed";
