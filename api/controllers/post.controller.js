@@ -29,3 +29,32 @@ export const getPosts = async (req, res, next) => {
         next(err);
     }
 }
+
+export const deletePost = async (req, res, next) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (post.user.toString() === req.user.id) {
+            await Post.findByIdAndDelete(req.params.id);
+            res.status(200).json("Post deleted successfully");
+        } else {
+            return next(errorHandler(403, "You can only delete your own posts!"));
+        }
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const likePost = async (req, res, next) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post.likes.includes(req.user.id)) {
+            await post.updateOne({ $push: { likes: req.user.id } });
+            res.status(200).json("Post liked successfully");
+        } else {
+            await post.updateOne({ $pull: { likes: req.user.id } });
+            res.status(200).json("Post disliked successfully");
+        }
+    } catch (err) {
+        next(err);
+    }
+}

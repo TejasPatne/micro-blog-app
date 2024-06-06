@@ -6,10 +6,10 @@ const postSchema = new mongoose.Schema({
         required: true,
         maxlength: 140
     },
-    likes: {
-        type: Number,
-        default: 0
-    },
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
