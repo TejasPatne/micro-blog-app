@@ -3,7 +3,7 @@ import { Post } from "../models/index.js";
 export const createPost = async (req, res, next) => {
     try {
         const post = await Post.create(req.body);
-        await post.populate('user', 'username profilePicture');
+        await post.populate('user', 'username profilePicture bookmarks');
         res.status(201).json(post);
     } catch (err) {
         next(err);
@@ -21,7 +21,7 @@ export const getPosts = async (req, res, next) => {
                                 .populate(
                                     {
                                         path: 'user',
-                                        select: 'username profilePicture' // specify which fields to include
+                                        select: 'username profilePicture bookmarks' // specify which fields to include
                                     }
                                 )
                                 .exec();

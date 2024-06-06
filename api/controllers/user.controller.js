@@ -44,3 +44,19 @@ export const deleteUser = async (req, res, next) => {
         next(err)
     }
 }
+
+export const bookmarkPost = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(req.user.id);
+        if (!user.bookmarks.includes(id)) {
+            const updatedUserInfo = await User.findByIdAndUpdate(req.user.id, { $push: { bookmarks: id } }, { new: true });
+            res.status(200).json(updatedUserInfo);
+        } else {
+            const updatedUserInfo = await User.findByIdAndUpdate(req.user.id, { $pull: { bookmarks: id } }, { new: true });
+            res.status(200).json(updatedUserInfo);
+        }
+    } catch (err) {
+        next(err);
+    }
+}

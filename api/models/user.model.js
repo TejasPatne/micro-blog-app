@@ -18,7 +18,11 @@ const userSchema = new mongoose.Schema({
     profilePicture:{
         type: String,
         default: "https://pbs.twimg.com/profile_images/1705186839584194560/9YD29Lmg_200x200.jpg"
-    }
+    },
+    bookmarks: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+    }]
 }, {
     toJSON: {
         transform(doc, ret) {

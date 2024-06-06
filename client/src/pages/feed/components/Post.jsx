@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { formatDate } from '../../../utility/format.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteOnePost, likePost } from '../../../redux/post/postSlice.js';
+import { updateUserSuccess } from '../../../redux/user/userSlice.js';
 
 export const Post = ({post}) => {
 
   const {currentUser} = useSelector((state) => state.user);
   const [updatedPost, setUpdatedPost] = useState(post);
+  const [bookmarked, setBookmarked] = useState(false);
   
   const dispatch = useDispatch();
 
@@ -45,6 +47,33 @@ export const Post = ({post}) => {
         }
     };
 
+    const handleBookmarkPost = async (postId) => {
+        if(currentUser === null){
+            navigate('/signin');
+            return;
+        }
+        try {
+            const res = await fetch(`/api/user/bookmark/${postId}`, {
+            method: 'PUT'
+            });
+            const data = await res.json();
+            if(data.success === false){
+                console.log(data.message);
+                return;
+            }
+            setBookmarked(true);
+            dispatch(updateUserSuccess(data));
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+      if(currentUser !== null){
+        setBookmarked(currentUser.bookmarks.includes(post._id));
+      }
+    }, [currentUser, post._id]);
+
   return (
     
     post &&
@@ -81,13 +110,21 @@ export const Post = ({post}) => {
                 </p>
               </div>
               {/* cta */}
-              <div className="flex justify-around text-xl">
+              <div className="flex justify-around text-4xl ">
                 <button onClick={() => handleLikePost(post._id)}>
-                  {updatedPost.likes.includes(currentUser?._id) ? "❤️" : "🤍"}
+                  {updatedPost.likes.includes(currentUser?._id) ? <span>&#9829;</span> : <span>&#9825;</span>}
                 </button>
-                <button>🔃</button>
-                <button>💬</button>
-                <button>🔗</button>
+                <button>
+                    <span className='opacity-35'>&#9998;</span>
+                </button>
+                <button onClick={() => handleBookmarkPost(post._id)}>
+                    {
+                        !bookmarked ? <span>&#9872;</span> : <span>&#9873;</span>
+                    }
+                </button>
+                <button>
+                  <span className='text-3xl'>&#9823;</span>
+                </button>
               </div>
             </div>
           </div>
