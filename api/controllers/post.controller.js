@@ -13,7 +13,7 @@ export const createPost = async (req, res, next) => {
 export const getPosts = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 5;
+        const limit = parseInt(req.query.limit) || 5;
         const posts = await Post.find()
                                 .sort({ createdAt: -1 })
                                 .skip((page - 1) * limit)

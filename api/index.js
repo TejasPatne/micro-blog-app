@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import { authRoute, postRoute, userRoute } from './routes/index.js';
+import { authRoute, commentRoute, postRoute, userRoute } from './routes/index.js';
 
 dotenv.config(); 
 
@@ -23,6 +23,7 @@ app.listen(3000, () => console.log('API listening on port 3000!'));
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
+app.use('/api/comment', commentRoute);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
