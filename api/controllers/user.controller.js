@@ -60,3 +60,22 @@ export const bookmarkPost = async (req, res, next) => {
         next(err);
     }
 }
+
+export const follow = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(req.user.id);
+        if (!user.following.includes(id)) {
+            const updatedFollowerUserInfo = await User.findByIdAndUpdate(req.user.id, { $push: { following: id } }, { new: true });
+            const updatedFollowingUserInfo = await User.findByIdAndUpdate(id, { $push: { followers: req.user.id } }, { new: true });
+            res.status(200).json(updatedFollowerUserInfo);
+        } else {
+            const updatedFollowerUserInfo = await User.findByIdAndUpdate(req.user.id, { $pull: { following: id } }, { new: true });
+            const updatedFollowingUserInfo = await User.findByIdAndUpdate(id, { $pull: { followers: req.user.id } }, { new: true });
+            res.status(200).json(updatedFollowerUserInfo);
+        }
+    }
+    catch (err) {
+        next(err);
+    }
+}   
