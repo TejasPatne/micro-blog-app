@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Post } from "./components/Post.jsx";
+import { PostCard } from "./components/PostCard.jsx";
 import { createPostStart, getPostsFailure, getPostsStart, getPostsSuccess } from "../../redux/post/postSlice.js";
 
 export const Feed = () => {
@@ -106,7 +106,7 @@ export const Feed = () => {
       {/* posts listing */}
       <div className="flex flex-col items-center">
         {posts.map((post) => (
-          <Post key={post._id} post={post} />
+          <PostCard key={post._id} post={post} />
         ))}
       </div>
 

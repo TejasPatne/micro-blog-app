@@ -11,14 +11,16 @@ import { FaRegComment } from "react-icons/fa";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { GiRapidshareArrow } from "react-icons/gi";
 import { RiUserFollowLine, RiUserFollowFill } from "react-icons/ri";
+import { useNavigate } from "react-router";
 
-export const Post = ({ post }) => {
+export const PostCard = ({ post }) => {
   const { currentUser } = useSelector((state) => state.user);
   const [updatedPost, setUpdatedPost] = useState(post);
   const [bookmarked, setBookmarked] = useState(false);
   const [following, setFollowing] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleDeletePost = async (postId) => {
     if (confirm("Are you sure you want to delete this post?")) {
@@ -97,6 +99,14 @@ export const Post = ({ post }) => {
     }
   };
 
+  const handleComment = (id) => {
+    if (currentUser === null) {
+      navigate("/signin");
+      return;
+    }
+    navigate(`/post/${id}`);
+  }
+
   useEffect(() => {
     if (currentUser !== null) {
       setBookmarked(currentUser.bookmarks.includes(post._id));
@@ -162,7 +172,7 @@ export const Post = ({ post }) => {
                 <FcLikePlaceholder />
               )}
             </button>
-            <button className="opacity-60">
+            <button className="opacity-60" onClick={() => handleComment(post._id)}>
               <FaRegComment />
             </button>
             <button onClick={() => handleBookmarkPost(post._id)}>

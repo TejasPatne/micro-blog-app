@@ -60,3 +60,18 @@ export const likePost = async (req, res, next) => {
         next(err);
     }
 }
+
+export const getPostById = async (req, res, next) => {
+    const { id } = req.params; 
+    try {
+        const post = await Post.findById(id).populate(
+            {
+                path: 'user',
+                select: 'username profilePicture'
+            },
+        );
+        res.status(200).json(post);
+    } catch (err) {
+        next(err);
+    }
+}
