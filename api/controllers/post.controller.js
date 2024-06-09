@@ -10,6 +10,22 @@ export const createPost = async (req, res, next) => {
     }
 }
 
+export const repost = async (req, res, next) => {
+    try {
+        const post = await Post.findById({ _id: req.params.id });
+        const createdNewPost = await Post.create({
+            content: post.content,
+            user: post.user,
+            repostedBy: req.body.userId
+        })
+        await createdNewPost.populate('user', 'username profilePicture bookmarks');
+        await createdNewPost.populate('repostedBy', 'username');
+        res.status(201).json(createdNewPost);
+    } catch (err) {
+        next(err);
+    }
+}
+
 export const getPosts = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -18,12 +34,16 @@ export const getPosts = async (req, res, next) => {
                                 .sort({ createdAt: -1 })
                                 .skip((page - 1) * limit)
                                 .limit(limit)
-                                .populate(
+                                .populate([
                                     {
                                         path: 'user',
                                         select: 'username profilePicture bookmarks' // specify which fields to include
+                                    },
+                                    {
+                                        path: 'repostedBy',
+                                        select: 'username'
                                     }
-                                )
+                                ])
                                 .exec();
         res.status(200).json(posts);
     } catch (err) {
@@ -64,12 +84,16 @@ export const likePost = async (req, res, next) => {
 export const getPostById = async (req, res, next) => {
     const { id } = req.params; 
     try {
-        const post = await Post.findById(id).populate(
+        const post = await Post.findById(id).populate([
             {
                 path: 'user',
                 select: 'username profilePicture'
             },
-        );
+            {
+                path: 'repostedBy',
+                select: 'username'
+            }
+        ]);
         res.status(200).json(post);
     } catch (err) {
         next(err);

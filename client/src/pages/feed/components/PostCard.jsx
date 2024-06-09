@@ -107,6 +107,35 @@ export const PostCard = ({ post }) => {
     navigate(`/post/${id}`);
   }
 
+  const handleRepost = async (id) => {
+    if (currentUser === null) {
+      navigate("/signin");
+      return;
+    }
+    if(confirm("Are you sure you want to repost this post?")) {
+      try {
+        const res = await fetch(`/api/post/repost/${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: currentUser._id
+          }),
+        });
+        const data = await res.json();
+        if (data.success === false) {
+          console.log(data.message);
+          return;
+          }
+        setUpdatedPost(data);
+        navigate(`/post/${data._id}`);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
   useEffect(() => {
     if (currentUser !== null) {
       setBookmarked(currentUser.bookmarks.includes(post._id));
@@ -120,6 +149,15 @@ export const PostCard = ({ post }) => {
         key={post._id}
         className="flex flex-col text-left gap-4 w-full shadow p-4 m-4 rounded-lg"
       >
+
+        {
+          post.repostedBy && (
+            <div>
+              <span className="italic opacity-75">{post.repostedBy && `reposted by ${post.repostedBy?.username}`}</span>
+            </div>
+          )
+        }
+
         {/* user info */}
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
@@ -178,7 +216,7 @@ export const PostCard = ({ post }) => {
             <button onClick={() => handleBookmarkPost(post._id)}>
               {!bookmarked ? <IoBookmarkOutline /> : <IoBookmark />}
             </button>
-            <button>
+            <button onClick={() => handleRepost(post._id)}>
               <GiRapidshareArrow />
             </button>
           </div>
