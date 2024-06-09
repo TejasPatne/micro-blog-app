@@ -105,14 +105,14 @@ export const PostCard = ({ post }) => {
       return;
     }
     navigate(`/post/${id}`);
-  }
+  };
 
   const handleRepost = async (id) => {
     if (currentUser === null) {
       navigate("/signin");
       return;
     }
-    if(confirm("Are you sure you want to repost this post?")) {
+    if (confirm("Are you sure you want to repost this post?")) {
       try {
         const res = await fetch(`/api/post/repost/${id}`, {
           method: "POST",
@@ -120,21 +120,21 @@ export const PostCard = ({ post }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: currentUser._id
+            userId: currentUser._id,
           }),
         });
         const data = await res.json();
         if (data.success === false) {
           console.log(data.message);
           return;
-          }
+        }
         setUpdatedPost(data);
         navigate(`/post/${data._id}`);
       } catch (err) {
         console.log(err);
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (currentUser !== null) {
@@ -149,15 +149,6 @@ export const PostCard = ({ post }) => {
         key={post._id}
         className="flex flex-col text-left gap-4 w-full shadow p-4 m-4 rounded-lg"
       >
-
-        {
-          post.repostedBy && (
-            <div>
-              <span className="italic opacity-75">{post.repostedBy && `reposted by ${post.repostedBy?.username}`}</span>
-            </div>
-          )
-        }
-
         {/* user info */}
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
@@ -166,30 +157,42 @@ export const PostCard = ({ post }) => {
               alt="profile"
               className="w-14 h-14 rounded-full object-cover hover:border-2 border-neutral-200"
             />
-            <span className="text-2xl">{post.user.username}</span>
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between gap-4 items-center">
+                <span className="text-2xl">{post.user.username}</span>
+                <div className="my-auto flex flex-col">
+                  <button
+                    hidden={currentUser?._id === post.user._id}
+                    onClick={() => handleFollowUser(post.user._id)}
+                  >
+                    {following ? <RiUserFollowFill /> : <RiUserFollowLine />}
+                  </button>
+                  <button
+                    onClick={() => handleDeletePost(post._id)}
+                    hidden={!(currentUser?._id === post.user._id)}
+                  >
+                    <MdDelete />
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm opacity-75">{formatDate(post.updatedAt)}</p>
+            </div>
           </div>
 
           {/* actions */}
-          <div className="text-xl my-auto">
-            <button
-              hidden={currentUser?._id === post.user._id}
-              onClick={() => handleFollowUser(post.user._id)}
-            >
-              {following ? <RiUserFollowFill /> : <RiUserFollowLine />}
-            </button>
-            <button
-              onClick={() => handleDeletePost(post._id)}
-              hidden={!(currentUser?._id === post.user._id)}
-            >
-              <MdDelete />
-            </button>
-          </div>
+          {post.repostedBy && (
+            <div className="text-right">
+              <span className="italic opacity-75">
+                {post.repostedBy && `reposted by ${post.repostedBy?.username}`}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* post content */}
         <div className="flex flex-col gap-3">
-          <p className="text-xl">{post.content}</p>
-          <p className="opacity-75">{formatDate(post.updatedAt)}</p>
+          <pre className="text-xl font-sans">{post.content}</pre>
+          {/* <p className="opacity-75">{formatDate(post.updatedAt)}</p> */}
         </div>
 
         {/* actions */}
@@ -210,7 +213,10 @@ export const PostCard = ({ post }) => {
                 <FcLikePlaceholder />
               )}
             </button>
-            <button className="opacity-60" onClick={() => handleComment(post._id)}>
+            <button
+              className="opacity-60"
+              onClick={() => handleComment(post._id)}
+            >
               <FaRegComment />
             </button>
             <button onClick={() => handleBookmarkPost(post._id)}>

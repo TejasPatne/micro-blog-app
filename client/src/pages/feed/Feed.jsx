@@ -12,6 +12,8 @@ export const Feed = () => {
   const [limit, setLimit] = useState(5);
   const [hasMore, setHasMore] = useState(true);
 
+  const textLimit = 140;
+
   const { posts, loading, error, page } = useSelector((state) => state.post);
 
   const navigate = useNavigate();
@@ -79,24 +81,21 @@ export const Feed = () => {
 
       {/* create post */}
       <div>
-        <form className="flex justify-between gap-3 w-full">
-          <input
+        <form className="flex justify-between gap-3 w-full relative">
+          <textarea
             type="text"
             value={newPost}
             placeholder="What's on your mind?"
             className="w-full p-2 rounded-lg shadow outline-none"
             onChange={(e) => setNewPost(e.target.value)}
             required
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault(); // Prevent default behavior of form submission
-              }
-            }}
+            maxLength={textLimit}
           />
+          <p className="absolute bottom-1 right-16 text-slate-500">{newPost.length}/{textLimit}</p>
           <button
             type="submit"
             onClick={handleCreatePost}
-            className="bg-yellow-500 text-white p-2 rounded-lg shadow"
+            className="bg-yellow-500 h-fit my-auto text-white p-2 rounded-lg shadow"
           >
             Post
           </button>
