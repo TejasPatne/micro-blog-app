@@ -44,7 +44,7 @@ export const Feed = () => {
     } catch (err) {
       console.log(err);
     }
-    setNewPost(" ");
+    setNewPost("");
   };
 
 
@@ -95,7 +95,8 @@ export const Feed = () => {
           <button
             type="submit"
             onClick={handleCreatePost}
-            className="bg-yellow-500 h-fit my-auto text-white p-2 rounded-lg shadow"
+            className="bg-yellow-500 h-fit my-auto text-white p-2 rounded-lg shadow disabled:opacity-75"
+            disabled={newPost.trim().length === 0}
           >
             Post
           </button>

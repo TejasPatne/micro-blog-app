@@ -136,6 +136,10 @@ export const PostCard = ({ post }) => {
     }
   };
 
+  const highlightHashtags = (text) => {
+    return text.replace(/(^|\s|\t|\n)(#\w+)/g, '$1<span class="text-blue-600">$2</span>');
+  };
+
   useEffect(() => {
     if (currentUser !== null) {
       setBookmarked(currentUser.bookmarks.includes(post._id));
@@ -191,7 +195,7 @@ export const PostCard = ({ post }) => {
 
         {/* post content */}
         <div className="flex flex-col gap-3">
-          <pre className="text-xl font-sans">{post.content}</pre>
+          <div className="text-xl font-sans whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: highlightHashtags(post.content) }}></div>
           {/* <p className="opacity-75">{formatDate(post.updatedAt)}</p> */}
         </div>
 
